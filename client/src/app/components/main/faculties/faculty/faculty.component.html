@@ -1,0 +1,19 @@
+<div class="faculty">
+  <app-page-title [rootEssencesName]="'Faculties'" [rootEssencesLink]="'faculties'" [targetEssenceName]="faculty.name"></app-page-title>
+  <a href="faculties/{{faculty.id}}/edit" class="edit_button faculty__edit_button">Редагувати</a>
+
+  <app-top-info-block [imageUri]="faculty.facultyLogoUri" [imageAlt]="'Герб факультету'">
+    <label>Сайт:</label><span>{{faculty.website}}</span>
+    <label>E-mail:</label><span>{{faculty.email}}</span>
+    <label>Телефон:</label><span>{{faculty.phone}}</span>
+    <label>Адреса:</label><span>{{faculty.address}}</span>
+  </app-top-info-block>
+
+  <app-info-block class="faculty__department-items" [title]="'Кафедри'">
+    <app-department-item *ngFor="let department of faculty.departments" [department]="department"></app-department-item>
+  </app-info-block>
+
+  <app-info-block [title]="'Інформація про факультет'">
+    <div [innerHTML]="faculty.info"></div>
+  </app-info-block>
+</div>

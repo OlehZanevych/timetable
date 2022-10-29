@@ -1,0 +1,23 @@
+<div class="faculty-edit">
+  <form class="edit-form" [formGroup]="facultyForm" (ngSubmit)="onSubmit()">
+    <label>Назва факультету:</label><input type="text" formControlName="name">
+    <label>Лого:</label><img class="faculty-edit__logo" [src]="logoUri" *ngIf="logoUri">
+    <input formControlName="file" type="file" (change)="onFileChange($event)">
+    <!--    <div *ngIf="f.file.touched && f.file.invalid" class="alert alert-danger">-->
+    <!--      <div *ngIf="f.file.errors.required">File is required.</div>-->
+    <!--    </div>-->
+    <label>Сайт:</label><input type="text" formControlName="website">
+    <label>E-mail:</label><input type="text" formControlName="email">
+    <label>Телефон:</label><input type="text" formControlName="phone">
+    <label>Адреса:</label><input type="text" formControlName="address">
+
+    <label>Інформація:</label>
+    <quill-editor formControlName="info"></quill-editor>
+
+    <div class="edit-form__button_block">
+      <button type="submit">Зберегти зміни</button>
+      <a [routerLink]="['/faculties', faculty.id]" class="faculty__edit_link">Скасувати</a>
+      <a [routerLink]="['/faculties', faculty.id]" class="faculty__edit_link">Перейти до перегляду факультету (без збереження змін)</a>
+    </div>
+  </form>
+</div>

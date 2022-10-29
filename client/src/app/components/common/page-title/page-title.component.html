@@ -1,0 +1,10 @@
+<div>
+  <h1>
+    <ng-container *ngIf="rootEssencesLink; then linkElem; else spanElem"></ng-container>
+
+    <ng-template #linkElem><a routerLink="{{rootEssencesLink}}">{{rootEssencesName}}</a></ng-template>
+    <ng-template #spanElem>{{rootEssencesName}}</ng-template>
+
+    <ng-container *ngIf="targetEssenceName"> » {{targetEssenceName}}</ng-container>
+  </h1>
+</div>

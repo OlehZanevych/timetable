@@ -1,0 +1,8 @@
+<div class="top_info_block">
+  <img *ngIf="imageUri" class="top_info_block__image" src="{{imageUri}}"
+       alt="{{imageAlt}}">
+
+  <div class="top_info_block__info">
+    <ng-content></ng-content>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+.top_info_block {
+  display: flex;
+  align-items: flex-start;
+
+  &__image {
+    margin-right: 40px;
+  }
+
+  &__info {
+    display: grid;
+    grid-template-columns: 100px minmax(200px, auto);
+    grid-gap: 20px;
+
+    label {
+      grid-column: 1;
+      font-weight: 600;
+    }
+
+    span {
+      grid-column: 2;
+    }
+
+    label, span {
+      font-size: 20px;
+      font-family: "Roboto", sans-serif;
+      line-height: 36px;
+    }
+  }
+}

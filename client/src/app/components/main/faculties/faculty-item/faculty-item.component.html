@@ -1,0 +1,12 @@
+<div class="faculty-item">
+  <div class="faculty-item__icon_wrapper">
+    <img *ngIf="faculty.facultyLogoUri" class="faculty-item__icon" src="{{faculty.facultyLogoUri}}" alt="">
+  </div>
+  <div class="faculty-item__info">
+    <h2><a href="faculties/{{faculty.id}}">{{faculty.name}}</a></h2>
+    <p>Сайт: <a href="https://{{faculty.website}}" target="_blank">{{faculty.website}}</a></p>
+    <p>E-mail: <a href="mailto:{{faculty.email}}">{{faculty.email}}</a></p>
+    <p>Телефон: {{faculty.phone}}</p>
+    <p>Адреса: {{faculty.address}}</p>
+  </div>
+</div>

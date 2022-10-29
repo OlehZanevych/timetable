@@ -1,0 +1,34 @@
+.faculty {
+  position: relative;
+
+  &__edit_link {
+    display: block;
+  }
+
+  &__edit_button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  &__department-items {
+    :not(:first-child) {
+      display: block;
+      margin-top: 25px;
+    }
+  }
+}
+
+.edit_button {
+  display: inline-block;
+  color: #fff;
+  background-color: #167ad5;
+  padding: 10px 15px;
+  font-size: 28px;
+  border-radius: 8px;
+  text-decoration: none;
+
+  &:hover {
+    background-color: #153d78;
+  }
+}

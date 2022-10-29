@@ -1,0 +1,7 @@
+<div class="department-item">
+  <div class="department-item__info">
+    <h3><a [routerLink]="['/departments', department.id]">{{department.name}}</a></h3>
+    <p>E-mail: <a href="mailto:{{department.email}}">{{department.email}}</a></p>
+    <p>Телефон: {{department.phone}}</p>
+  </div>
+</div>

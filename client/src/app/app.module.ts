@@ -14,6 +14,18 @@ import { SignInComponent } from './components/auth/sign-in/sign-in.component';
 import { AuthComponent } from './components/auth/auth.component';
 import { SignUpComponent } from './components/auth/sign-up/sign-up.component';
 import { AdminComponent } from './components/admin/admin.component';
+import { FacultiesComponent } from './components/main/faculties/faculties.component';
+import { FacultyItemComponent } from './components/main/faculties/faculty-item/faculty-item.component';
+import { FacultyComponent } from './components/main/faculties/faculty/faculty.component';
+import { FacultyEditComponent } from './components/main/faculties/faculty/faculty-edit/faculty-edit.component';
+import { DepartmentItemComponent } from './components/main/faculties/faculty/department-item/department-item.component';
+import { PageTitleComponent } from './components/common/page-title/page-title.component';
+import { InfoBlockComponent } from './components/common/info-block/info-block.component';
+import { TopInfoBlockComponent } from './components/common/top-info-block/top-info-block.component';
+import { DepartmentViewComponent } from './components/main/department/department-view/department-view.component';
+import { LecturerItemComponent } from './components/main/department/lecturer-item/lecturer-item.component';
+import {AuthGuard} from './guards/auth.guard';
+import {AuthService} from './services/auth/auth.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +36,18 @@ import { AdminComponent } from './components/admin/admin.component';
     SignInComponent,
     AuthComponent,
     SignUpComponent,
-    AdminComponent
+    AdminComponent,
+    FacultiesComponent,
+    HeaderComponent,
+    FacultyItemComponent,
+    FacultyComponent,
+    FacultyEditComponent,
+    DepartmentItemComponent,
+    PageTitleComponent,
+    InfoBlockComponent,
+    TopInfoBlockComponent,
+    DepartmentViewComponent,
+    LecturerItemComponent
   ],
   imports: [
     BrowserModule,
@@ -34,7 +57,10 @@ import { AdminComponent } from './components/admin/admin.component';
     HttpClientModule,
     MaterialModule
   ],
-  providers: [],
+  providers: [
+    AuthService,
+    AuthGuard
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

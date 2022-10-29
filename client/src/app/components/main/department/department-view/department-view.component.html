@@ -1,0 +1,14 @@
+<app-page-title [rootEssencesName]="'Departments'" [targetEssenceName]="department.name"></app-page-title>
+
+<app-top-info-block>
+  <label>Name:</label><span>{{department.name}}</span>
+  <label>Faculty:</label><span>{{department.facultyName}}</span>
+  <label>Email:</label><span>{{department.email}}</span>
+  <label>Phone:</label><span>{{department.phone}}</span>
+  <label>Info:</label><span>{{department.info}}</span>
+</app-top-info-block>
+
+
+<app-info-block [title]="'Lecturers'">
+<!--  <app-lecturer-itemt *ngFor="let lecturer of department.lecturers" [lecturer]="lecturer"></app-lecturer-itemt>-->
+</app-info-block>
