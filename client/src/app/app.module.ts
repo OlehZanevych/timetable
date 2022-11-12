@@ -26,6 +26,8 @@ import { DepartmentViewComponent } from './components/main/department/department
 import { LecturerItemComponent } from './components/main/department/lecturer-item/lecturer-item.component';
 import {AuthGuard} from './guards/auth.guard';
 import {AuthService} from './services/auth/auth.service';
+import { AdminFacultiesComponent } from './components/admin/admin-faculties/admin-faculties.component';
+import { AdminFacultyItemComponent } from './components/admin/admin-faculties/admin-faculty-item/admin-faculty-item.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import {AuthService} from './services/auth/auth.service';
     InfoBlockComponent,
     TopInfoBlockComponent,
     DepartmentViewComponent,
-    LecturerItemComponent
+    LecturerItemComponent,
+    AdminFacultiesComponent,
+    AdminFacultyItemComponent
   ],
   imports: [
     BrowserModule,

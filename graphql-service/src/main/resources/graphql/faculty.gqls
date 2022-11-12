@@ -1,0 +1,16 @@
+type FacultyQueries {
+    facultyConnection: [Faculty!]
+    faculty(id: ID!): Faculty
+}
+
+type Faculty {
+    id: ID!
+    name: String!
+    website: String!
+    email: String!
+    phone: String!
+    address: String!
+    logoUri: String
+    info: String
+    departments: [Department!]
+}

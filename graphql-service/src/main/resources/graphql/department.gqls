@@ -1,0 +1,8 @@
+type Department {
+    id: ID!
+    name: String!
+    email: String!
+    phone: String!
+    address: String
+    info: String
+}

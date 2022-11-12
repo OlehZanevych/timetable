@@ -10,12 +10,16 @@ import {FacultiesComponent} from './components/main/faculties/faculties.componen
 import {FacultyComponent} from './components/main/faculties/faculty/faculty.component';
 import {FacultyEditComponent} from './components/main/faculties/faculty/faculty-edit/faculty-edit.component';
 import {DepartmentViewComponent} from './components/main/department/department-view/department-view.component';
+import {AdminFacultiesComponent} from './components/admin/admin-faculties/admin-faculties.component';
 
 const DEPARTMENT_ROOT_ROUTE = 'departments';
 const FACULTY_ROOT_ROUTE = 'faculties';
 
 const routes: Routes = [{
-  path: 'admin', component: AdminComponent, canActivate: [AuthGuard]
+  path: 'admin', component: AdminComponent, canActivate: [AuthGuard],
+  children: [{
+    path: FACULTY_ROOT_ROUTE, component: AdminFacultiesComponent
+  }]
 }, {
   path: 'auth', component: AuthComponent,
   children: [{
@@ -23,9 +27,13 @@ const routes: Routes = [{
   }, {
     path: '**', component: SignInComponent
   }]
-}, {path: `${FACULTY_ROOT_ROUTE}/:id`, component: FacultyComponent},
-  {path: `${FACULTY_ROOT_ROUTE}/:id/edit`, component: FacultyEditComponent},
-  {path: `${DEPARTMENT_ROOT_ROUTE}/:id`, component: DepartmentViewComponent},{
+}, {
+  path: `${FACULTY_ROOT_ROUTE}/:id`, component: FacultyComponent
+}, {
+  path: `${FACULTY_ROOT_ROUTE}/:id/edit`, component: FacultyEditComponent
+}, {
+  path: `${DEPARTMENT_ROOT_ROUTE}/:id`, component: DepartmentViewComponent
+}, {
   path: '**', component: FacultiesComponent
 }];
 
