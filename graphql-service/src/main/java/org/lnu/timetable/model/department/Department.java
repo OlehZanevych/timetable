@@ -10,7 +10,7 @@ import java.util.List;
 @Table("departments")
 public class Department {
 
-    public static final List<String> selectableFields = List.of(
+    public static final List<String> selectableDbFields = List.of(
         "name",
         "facultyId",
         "email",

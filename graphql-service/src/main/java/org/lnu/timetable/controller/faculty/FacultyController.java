@@ -1,5 +1,6 @@
 package org.lnu.timetable.controller.faculty;
 
+import graphql.GraphQLContext;
 import lombok.AllArgsConstructor;
 import org.lnu.timetable.model.department.Department;
 import org.lnu.timetable.model.faculty.Faculty;
@@ -32,8 +33,8 @@ public class FacultyController {
     private final DepartmentService departmentService;
 
     @BatchMapping
-    public Mono<Map<Faculty, List<Department>>> departments(List<Faculty> faculties) {
-        return departmentService.findForFaculties(faculties);
+    public Mono<Map<Faculty, List<Department>>> departments(List<Faculty> faculties, GraphQLContext context) {
+        return departmentService.findForFaculties(faculties, context);
     }
 
     @SchemaMapping

@@ -1,5 +1,6 @@
 package org.lnu.timetable.controller.faculty.queries;
 
+import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
 import lombok.AllArgsConstructor;
 import org.lnu.timetable.model.faculty.Faculty;
@@ -17,12 +18,12 @@ public class FacultyQueriesController {
     private final FacultyService facultyService;
 
     @SchemaMapping
-    public Flux<Faculty> facultyConnection(DataFetchingFieldSelectionSet fs) {
-        return facultyService.findAll(fs);
+    public Flux<Faculty> facultyConnection(DataFetchingFieldSelectionSet fs, GraphQLContext context) {
+        return facultyService.findAll(fs, context);
     }
 
     @SchemaMapping
-    public Mono<Faculty> faculty(@Argument Long id, DataFetchingFieldSelectionSet fs) {
-        return facultyService.findById(id, fs);
+    public Mono<Faculty> faculty(@Argument Long id, DataFetchingFieldSelectionSet fs, GraphQLContext context) {
+        return facultyService.findById(id, fs, context);
     }
 }

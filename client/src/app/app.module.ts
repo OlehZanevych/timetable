@@ -28,6 +28,7 @@ import {AuthGuard} from './guards/auth.guard';
 import {AuthService} from './services/auth/auth.service';
 import { AdminFacultiesComponent } from './components/admin/admin-faculties/admin-faculties.component';
 import { AdminFacultyItemComponent } from './components/admin/admin-faculties/admin-faculty-item/admin-faculty-item.component';
+import {ApolloClientModule} from './apollo/apollo.client.module';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { AdminFacultyItemComponent } from './components/admin/admin-faculties/ad
     BrowserAnimationsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    ApolloClientModule,
     HttpClientModule,
     MaterialModule
   ],

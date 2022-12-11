@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Table("faculties")
 public class Faculty {
-    public static final List<String> selectableFields = List.of(
+    public static final List<String> selectableDbFields = List.of(
         "name",
         "website",
         "email",

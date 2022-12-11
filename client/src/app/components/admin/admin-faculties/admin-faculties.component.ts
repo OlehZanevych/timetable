@@ -16,12 +16,6 @@ export class AdminFacultiesComponent implements OnInit {
 
   ngOnInit(): void {
     this.facultyService.getFaculties().subscribe(faculties => {
-      faculties.forEach(faculty => {
-        const {facultyLogoUri} = faculty;
-        if (facultyLogoUri) {
-          faculty.facultyLogoUri = `${HOST_URL}/${facultyLogoUri}`;
-        }
-      });
       this.faculties = faculties;
     });
   }
