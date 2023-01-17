@@ -1,9 +1,10 @@
 package org.lnu.timetable.repository.faculty.impl;
 
 import lombok.AllArgsConstructor;
-import org.lnu.timetable.model.faculty.Faculty;
+import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,15 +25,27 @@ public class FacultyRepositoryImpl implements FacultyRepository {
     private final R2dbcEntityTemplate r2dbcEntityTemplate;
 
     @Override
-    public Flux<Faculty> findAll(Collection<String> fields) {
+    public Flux<Faculty> findAll(Collection<String> fields, int limit, long offset) {
+        Query query = empty().columns(fields).limit(limit)
+                .sort(by(asc("name")));
+
+        if (offset != 0) {
+            query = query.offset(offset);
+        }
+
         return r2dbcEntityTemplate.select(Faculty.class)
-            .matching(empty().columns(fields)
-                .sort(by(asc("name")))).all();
+            .matching(query)
+                .all();
     }
 
     @Override
     public Mono<Faculty> findById(Long id, Collection<String> fields) {
         return r2dbcEntityTemplate.select(Faculty.class)
             .matching(query(where(ID).is(id)).columns(fields)).one();
+    }
+
+    @Override
+    public Mono<Long> count() {
+        return r2dbcEntityTemplate.count(empty(), Faculty.class);
     }
 }

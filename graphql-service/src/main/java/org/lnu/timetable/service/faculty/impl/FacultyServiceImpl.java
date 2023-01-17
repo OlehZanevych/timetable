@@ -3,9 +3,11 @@ package org.lnu.timetable.service.faculty.impl;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
 import graphql.schema.SelectedField;
-import org.lnu.timetable.model.department.Department;
-import org.lnu.timetable.model.faculty.Faculty;
+import org.lnu.timetable.constants.GraphQlSchemaConstants;
+import org.lnu.timetable.entity.department.Department;
+import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
+import org.lnu.timetable.service.common.impl.CommonEntityServiceImpl;
 import org.lnu.timetable.service.faculty.FacultyService;
 import org.lnu.timetable.service.file.storage.FileStorageService;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -24,11 +27,9 @@ import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFieldSet;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 
 @Service
-public class FacultyServiceImpl implements FacultyService {
+public class FacultyServiceImpl extends CommonEntityServiceImpl<Faculty> implements FacultyService {
 
     private static final String FACULTY_LOGO_FOLDER = "faculties/logos/";
-
-    private static final String DEPARTMENTS = "departments";
 
     private final FacultyRepository facultyRepository;
 
@@ -45,11 +46,8 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Flux<Faculty> findAll(DataFetchingFieldSelectionSet fs, GraphQLContext context) {
-        List<String> selectedDbFields = getSelectedDbFields(Faculty.selectableDbFields, fs);
-        saveDepartmentSelectedDbFieldsIntoContext(fs, context);
-
-        return facultyRepository.findAll(selectedDbFields);
+    protected Flux<Faculty> findAll(Collection<String> fields, int limit, long offset) {
+        return facultyRepository.findAll(fields, limit, offset);
     }
 
     @Override
@@ -61,13 +59,23 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
+    protected Mono<Long> count() {
+        return facultyRepository.count();
+    }
+
+    @Override
+    protected void processNodesFieldSelection(DataFetchingFieldSelectionSet nodesFs, GraphQLContext context) {
+        saveDepartmentSelectedDbFieldsIntoContext(nodesFs, context);
+    }
+
+    @Override
     public Mono<String> findLogoUri(Faculty faculty) {
         Long facultyId = faculty.getId();
         String logoFileName = getFacultyLogoFileName(facultyId);
 
         return fileStorageService.checkIfFileExists(logoFileName).flatMap(logoExists -> logoExists
-            ? Mono.just(serviceHost + FACULTIES_ROOT_URI + "/" + faculty.getId() + "/" + FACULTY_LOGO_SUB_URI)
-            : Mono.empty());
+                ? Mono.just(serviceHost + FACULTIES_ROOT_URI + "/" + faculty.getId() + "/" + FACULTY_LOGO_SUB_URI)
+                : Mono.empty());
     }
 
     @Override
@@ -77,10 +85,10 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     private void saveDepartmentSelectedDbFieldsIntoContext(DataFetchingFieldSelectionSet fs, GraphQLContext context) {
-        List<SelectedField> departmentsFieldSearchResult = fs.getFields(DEPARTMENTS);
+        List<SelectedField> departmentsFieldSearchResult = fs.getFields(GraphQlSchemaConstants.DEPARTMENTS);
         if (departmentsFieldSearchResult.size() == 1) {
             Set<String> currentDepartmentSelectedDbFields = getSelectedDbFieldSet(Department.selectableDbFields,
-                departmentsFieldSearchResult.get(0).getSelectionSet());
+                    departmentsFieldSearchResult.get(0).getSelectionSet());
 
             Set<String> departmentSelectedDbFields = context.get(DEPARTMENT_SELECTED_DB_FIELDS);
             if (departmentSelectedDbFields == null) {

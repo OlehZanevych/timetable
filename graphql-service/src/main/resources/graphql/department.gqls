@@ -1,4 +1,22 @@
+type DepartmentQueries {
+    departmentConnection(limit: Int! = 1000, offset: Int! = 0): FacultyConnection
+    department(id: ID!): Faculty
+}
+
+type DepartmentConnection {
+    nodes: [Department!]!
+    pageInfo: ConnectionPageInfo!
+}
+
 type Department {
+    id: ID!
+    name: String!
+    email: String!
+    phone: String!
+    info: String
+}
+
+type DepartmentItem {
     id: ID!
     name: String!
     email: String!

@@ -2,8 +2,8 @@ package org.lnu.timetable.controller.faculty;
 
 import graphql.GraphQLContext;
 import lombok.AllArgsConstructor;
-import org.lnu.timetable.model.department.Department;
-import org.lnu.timetable.model.faculty.Faculty;
+import org.lnu.timetable.entity.department.Department;
+import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.service.department.DepartmentService;
 import org.lnu.timetable.service.faculty.FacultyService;
 import org.springframework.core.io.buffer.DataBuffer;

@@ -1,6 +1,11 @@
 type FacultyQueries {
-    facultyConnection: [Faculty!]
+    facultyConnection(limit: Int! = 1000, offset: Int! = 0): FacultyConnection
     faculty(id: ID!): Faculty
+}
+
+type FacultyConnection {
+    nodes: [Faculty!]!
+    pageInfo: ConnectionPageInfo!
 }
 
 type Faculty {
@@ -12,5 +17,5 @@ type Faculty {
     address: String!
     logoUri: String
     info: String
-    departments: [Department!]
+    departments: [DepartmentItem!]
 }

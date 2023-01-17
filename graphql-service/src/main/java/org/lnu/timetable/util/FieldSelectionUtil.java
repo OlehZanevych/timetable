@@ -10,8 +10,9 @@ import java.util.Set;
 
 import static org.lnu.timetable.constants.ModelConstants.ID;
 
-@Component
 public class FieldSelectionUtil {
+    public static List<String> ID_FIELD_ONLY = List.of(ID);
+
     public static List<String> getSelectedDbFields(List<String> selectableDbFields, DataFetchingFieldSelectionSet fs) {
         List<String> dbFields = new ArrayList<>();
         dbFields.add(ID);

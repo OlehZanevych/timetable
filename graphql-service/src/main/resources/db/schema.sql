@@ -1,12 +1,5 @@
-DROP TABLE IF EXISTS lecturers;
-DROP TABLE IF EXISTS scientific_degrees;
-DROP TYPE IF EXISTS academic_status;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS academic_groups;
-DROP TABLE IF EXISTS department_specialties;
-DROP TABLE IF EXISTS departments;
-DROP TABLE IF EXISTS faculties;
-DROP TABLE IF EXISTS specialties;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 
 CREATE TYPE academic_status AS ENUM (
     'SENIOR_RESEARCHER',

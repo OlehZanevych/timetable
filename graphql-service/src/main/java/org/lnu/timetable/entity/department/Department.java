@@ -1,4 +1,4 @@
-package org.lnu.timetable.model.faculty;
+package org.lnu.timetable.entity.department;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -7,14 +7,14 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.List;
 
 @Data
-@Table("faculties")
-public class Faculty {
+@Table("departments")
+public class Department {
+
     public static final List<String> selectableDbFields = List.of(
         "name",
-        "website",
+        "facultyId",
         "email",
         "phone",
-        "address",
         "info"
     );
 
@@ -23,13 +23,12 @@ public class Faculty {
 
     private String name;
 
-    private String website;
+    private Long facultyId;
 
     private String email;
 
     private String phone;
 
-    private String address;
-
     private String info;
+
 }
