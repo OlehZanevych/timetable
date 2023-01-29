@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 import java.util.Collection;
 
 public interface DepartmentRepository {
+    Mono<Department> create(Department department);
     Flux<Department> findAll(Collection<String> fields, int limit, long offset);
     Mono<Department> findById(Long id, Collection<String> fields);
     Mono<Long> count();

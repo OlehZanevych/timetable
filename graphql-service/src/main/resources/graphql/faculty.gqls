@@ -19,3 +19,14 @@ type Faculty {
     info: String
     departments: [DepartmentItem!]
 }
+
+type FacultyItem {
+    id: ID!
+    name: String!
+    website: String!
+    email: String!
+    phone: String!
+    address: String!
+    logoUri: String
+    info: String
+}

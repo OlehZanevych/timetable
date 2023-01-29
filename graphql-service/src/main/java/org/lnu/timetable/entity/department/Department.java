@@ -1,6 +1,7 @@
 package org.lnu.timetable.entity.department;
 
 import lombok.Data;
+import org.lnu.timetable.entity.faculty.Faculty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -24,6 +25,8 @@ public class Department {
     private String name;
 
     private Long facultyId;
+
+    private Faculty faculty;
 
     private String email;
 

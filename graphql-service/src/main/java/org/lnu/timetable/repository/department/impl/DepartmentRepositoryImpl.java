@@ -25,6 +25,11 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
     private final R2dbcEntityTemplate r2dbcEntityTemplate;
 
     @Override
+    public Mono<Department> create(Department department) {
+        return r2dbcEntityTemplate.insert(department);
+    }
+
+    @Override
     public Flux<Department> findAll(Collection<String> fields, int limit, long offset) {
         Query query = empty().columns(fields).limit(limit)
                 .sort(by(asc("name")));

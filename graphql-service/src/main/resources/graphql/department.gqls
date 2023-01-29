@@ -3,6 +3,10 @@ type DepartmentQueries {
     department(id: ID!): Faculty
 }
 
+type DepartmentMutations {
+    createDepartment(department: DepartmentInputPayload!): CreateDepartmentResponse !
+}
+
 type DepartmentConnection {
     nodes: [Department!]!
     pageInfo: ConnectionPageInfo!
@@ -14,6 +18,7 @@ type Department {
     email: String!
     phone: String!
     info: String
+    faculty: FacultyItem!
 }
 
 type DepartmentItem {
@@ -22,4 +27,33 @@ type DepartmentItem {
     email: String!
     phone: String!
     info: String
+}
+
+input DepartmentInputPayload {
+    name: String!
+    facultyId: ID!
+    email: String!
+    phone: String!
+    info: String
+}
+
+type CreateDepartmentResponse {
+    """
+    Flag that indicates whether Department was created successfully
+    """
+    isSuccess: Boolean!
+    """
+    Created Department
+    """
+    data: Department
+    """
+    Indicates the type of error that caused creation of Department to fail
+    """
+    errorStatus: InputDepartmentErrorStatus
+}
+
+enum InputDepartmentErrorStatus {
+    DUPLICATED_NAME
+    FACULTY_NOT_FOUND
+    INTERNAL_SERVER_ERROR
 }
