@@ -5,9 +5,11 @@ import graphql.schema.DataFetchingFieldSelectionSet;
 import graphql.schema.SelectedField;
 import lombok.AllArgsConstructor;
 import org.lnu.timetable.constants.GraphQlSchemaConstants;
+import org.lnu.timetable.entity.common.CreateMutationResponse;
 import org.lnu.timetable.entity.common.MutationResponse;
 import org.lnu.timetable.entity.department.Department;
-import org.lnu.timetable.entity.department.input.DepartmentInputErrorStatus;
+import org.lnu.timetable.entity.department.error.status.DepartmentCreateErrorStatus;
+import org.lnu.timetable.entity.department.error.status.DepartmentDeleteErrorStatus;
 import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.repository.department.DepartmentRepository;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
@@ -29,8 +31,8 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 import static org.lnu.timetable.constants.GraphQlContextConstants.DEPARTMENT_SELECTED_DB_FIELDS;
-import static org.lnu.timetable.entity.common.MutationResponse.createErrorMutationResponse;
-import static org.lnu.timetable.entity.common.MutationResponse.createSuccessMutationResponse;
+import static org.lnu.timetable.entity.common.CreateMutationResponse.errorCreateMutationResponse;
+import static org.lnu.timetable.entity.common.CreateMutationResponse.successfulCreateMutationResponse;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 
 @Service
@@ -42,7 +44,7 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
     private final DepartmentRepository departmentRepository;
     private final FacultyRepository facultyRepository;
     @Override
-    public Mono<MutationResponse<Department, DepartmentInputErrorStatus>> create(Department department, DataFetchingFieldSelectionSet fs) {
+    public Mono<CreateMutationResponse<Department, DepartmentCreateErrorStatus>> create(Department department, DataFetchingFieldSelectionSet fs) {
         return departmentRepository.create(department)
                 .flatMap(createdDepartment -> {
                     List<String> selectedFacultyDbFields = getFacultySelectedDbFieldsInResponseData(fs);
@@ -57,18 +59,18 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
                 }
               )
                 .onErrorResume(e -> {
-                    DepartmentInputErrorStatus errorStatus = DepartmentInputErrorStatus.INTERNAL_SERVER_ERROR;
+                    DepartmentCreateErrorStatus errorStatus = DepartmentCreateErrorStatus.INTERNAL_SERVER_ERROR;
                     if (e instanceof DuplicateKeyException
                             && "duplicate key value violates unique constraint \"departments_name_key\"".equals(e.getCause().getMessage())) {
 
-                        errorStatus = DepartmentInputErrorStatus.DUPLICATED_NAME;
+                        errorStatus = DepartmentCreateErrorStatus.DUPLICATED_NAME;
                     } else if (e instanceof DataIntegrityViolationException &&
                             "insert or update on table \"departments\" violates foreign key constraint \"departments_faculty_id_fkey\"".equals(e.getCause().getMessage())) {
 
-                        errorStatus = DepartmentInputErrorStatus.FACULTY_NOT_FOUND;
+                        errorStatus = DepartmentCreateErrorStatus.FACULTY_NOT_FOUND;
                     }
 
-                    return Mono.just(createErrorMutationResponse(errorStatus));
+                    return Mono.just(errorCreateMutationResponse(errorStatus));
                 });
     }
 
@@ -82,6 +84,11 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
         List<String> selectedDbFields = getSelectedDbFields(Department.selectableDbFields, fs);
 
         return departmentRepository.findById(id, selectedDbFields);
+    }
+
+    @Override
+    public Mono<MutationResponse<DepartmentDeleteErrorStatus>> delete(Long id) {
+        return null;
     }
 
     @Override
@@ -127,7 +134,7 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
         return getSelectedDbFields(Faculty.selectableDbFields, facultyFs);
     }
 
-    private MutationResponse<Department, DepartmentInputErrorStatus> createDepartmentResponse(Department department) {
-        return createSuccessMutationResponse(department);
+    private CreateMutationResponse<Department, DepartmentCreateErrorStatus> createDepartmentResponse(Department department) {
+        return successfulCreateMutationResponse(department);
     }
 }

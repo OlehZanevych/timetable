@@ -4,7 +4,7 @@ type DepartmentQueries {
 }
 
 type DepartmentMutations {
-    createDepartment(department: DepartmentInputPayload!): CreateDepartmentResponse !
+    createDepartment(department: DepartmentInputPayload!): DepartmentCreateResponse !
 }
 
 type DepartmentConnection {
@@ -37,7 +37,7 @@ input DepartmentInputPayload {
     info: String
 }
 
-type CreateDepartmentResponse {
+type DepartmentCreateResponse {
     """
     Flag that indicates whether Department was created successfully
     """
@@ -47,13 +47,47 @@ type CreateDepartmentResponse {
     """
     data: Department
     """
-    Indicates the type of error that caused creation of Department to fail
+    Indicates the type of error that caused creating of Department to fail
     """
-    errorStatus: InputDepartmentErrorStatus
+    errorStatus: DepartmentCreateErrorStatus
 }
 
-enum InputDepartmentErrorStatus {
+type DepartmentUpdateResponse {
+    """
+    Flag that indicates whether Department was updated successfully
+    """
+    isSuccess: Boolean!
+    """
+    Indicates the type of error that caused updating of Department to fail
+    """
+    errorStatus: DepartmentUpdateErrorStatus
+}
+
+type DepartmentDeleteResponse {
+    """
+    Flag that indicates whether Department was deleted successfully
+    """
+    isSuccess: Boolean!
+    """
+    Indicates the type of error that caused deleting of Department to fail
+    """
+    errorStatus: DepartmentDeleteErrorStatus
+}
+
+enum DepartmentCreateErrorStatus {
     DUPLICATED_NAME
     FACULTY_NOT_FOUND
+    INTERNAL_SERVER_ERROR
+}
+
+enum DepartmentUpdateErrorStatus {
+    DEPARTMENT_NOT_FOUND
+    DUPLICATED_NAME
+    FACULTY_NOT_FOUND
+    INTERNAL_SERVER_ERROR
+}
+
+enum DepartmentDeleteErrorStatus {
+    DEPARTMENT_NOT_FOUND
     INTERNAL_SERVER_ERROR
 }
