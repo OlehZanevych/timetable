@@ -11,5 +11,7 @@ public interface DepartmentRepository {
     Flux<Department> findAll(Collection<String> fields, int limit, long offset);
     Mono<Department> findById(Long id, Collection<String> fields);
     Mono<Long> count();
+    Mono<Boolean> update(Department department);
+    Mono<Boolean> delete(Long id);
     Flux<Department> findByFacultyIds(Collection<Long> facultyIds, Collection<String> fields);
 }

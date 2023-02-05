@@ -4,7 +4,9 @@ type DepartmentQueries {
 }
 
 type DepartmentMutations {
-    createDepartment(department: DepartmentInputPayload!): DepartmentCreateResponse !
+    createDepartment(department: DepartmentInputPayload!): DepartmentCreateResponse
+    updateDepartment(id: ID!, department: DepartmentInputPayload!): DepartmentUpdateResponse
+    deleteDepartment(id: ID!): DepartmentDeleteResponse
 }
 
 type DepartmentConnection {

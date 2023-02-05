@@ -16,4 +16,5 @@ public class MutationResponse<ErrorStatus> {
     private final boolean isSuccess;
 
     private final ErrorStatus errorStatus;
+
 }

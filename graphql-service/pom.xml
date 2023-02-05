@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.0.2</version>
+		<relativePath/>
 	</parent>
 	<groupId>org.lnu</groupId>
 	<artifactId>timetable</artifactId>
@@ -18,7 +18,7 @@
 		<java.version>19</java.version>
 
         <r2dbc-postgresql.version>0.8.13.RELEASE</r2dbc-postgresql.version>
-        <lombok.version>1.18.24</lombok.version>
+        <lombok.version>1.18.26</lombok.version>
 	</properties>
 
 	<dependencies>

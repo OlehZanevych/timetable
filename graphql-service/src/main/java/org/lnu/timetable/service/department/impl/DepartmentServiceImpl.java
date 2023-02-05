@@ -10,6 +10,7 @@ import org.lnu.timetable.entity.common.MutationResponse;
 import org.lnu.timetable.entity.department.Department;
 import org.lnu.timetable.entity.department.error.status.DepartmentCreateErrorStatus;
 import org.lnu.timetable.entity.department.error.status.DepartmentDeleteErrorStatus;
+import org.lnu.timetable.entity.department.error.status.DepartmentUpdateErrorStatus;
 import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.repository.department.DepartmentRepository;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
@@ -32,7 +33,8 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 import static org.lnu.timetable.constants.GraphQlContextConstants.DEPARTMENT_SELECTED_DB_FIELDS;
 import static org.lnu.timetable.entity.common.CreateMutationResponse.errorCreateMutationResponse;
-import static org.lnu.timetable.entity.common.CreateMutationResponse.successfulCreateMutationResponse;
+import static org.lnu.timetable.entity.common.MutationResponse.errorMutationResponse;
+import static org.lnu.timetable.entity.common.MutationResponse.successfulMutationResponse;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 
 @Service
@@ -41,36 +43,59 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
 
     private static final String FACULTY_ID = "facultyId";
 
+    private static final CreateMutationResponse<Department, DepartmentCreateErrorStatus> DUPLICATED_NAME_CREATE_MUTATION_RESPONSE
+            = errorCreateMutationResponse(DepartmentCreateErrorStatus.DUPLICATED_NAME);
+    private static final CreateMutationResponse<Department, DepartmentCreateErrorStatus> FACULTY_NOT_FOUND_CREATE_MUTATION_RESPONSE
+            = errorCreateMutationResponse(DepartmentCreateErrorStatus.FACULTY_NOT_FOUND);
+    private static final CreateMutationResponse<Department, DepartmentCreateErrorStatus> INTERNAL_SERVER_ERROR_CREATE_MUTATION_RESPONSE
+            = errorCreateMutationResponse(DepartmentCreateErrorStatus.INTERNAL_SERVER_ERROR);
+
+    private static final MutationResponse<DepartmentUpdateErrorStatus> DEPARTMENT_NOT_FOUND_UPDATE_MUTATION_RESPONSE
+            = errorMutationResponse(DepartmentUpdateErrorStatus.DEPARTMENT_NOT_FOUND);
+    private static final MutationResponse<DepartmentUpdateErrorStatus> DUPLICATED_NAME_UPDATE_MUTATION_RESPONSE
+            = errorMutationResponse(DepartmentUpdateErrorStatus.DUPLICATED_NAME);
+    private static final MutationResponse<DepartmentUpdateErrorStatus> FACULTY_NOT_FOUND_UPDATE_MUTATION_RESPONSE
+            = errorMutationResponse(DepartmentUpdateErrorStatus.FACULTY_NOT_FOUND);
+    private static final MutationResponse<DepartmentUpdateErrorStatus> INTERNAL_SERVER_ERROR_UPDATE_MUTATION_RESPONSE
+            = errorMutationResponse(DepartmentUpdateErrorStatus.INTERNAL_SERVER_ERROR);
+
+    private static final MutationResponse<DepartmentDeleteErrorStatus> DEPARTMENT_NOT_FOUND_DELETE_MUTATION_RESPONSE
+            = errorMutationResponse(DepartmentDeleteErrorStatus.DEPARTMENT_NOT_FOUND);
+    private static final MutationResponse<DepartmentDeleteErrorStatus> INTERNAL_SERVER_ERROR_DELETE_MUTATION_RESPONSE
+            = errorMutationResponse(DepartmentDeleteErrorStatus.INTERNAL_SERVER_ERROR);
+
     private final DepartmentRepository departmentRepository;
     private final FacultyRepository facultyRepository;
+
     @Override
     public Mono<CreateMutationResponse<Department, DepartmentCreateErrorStatus>> create(Department department, DataFetchingFieldSelectionSet fs) {
         return departmentRepository.create(department)
                 .flatMap(createdDepartment -> {
-                    List<String> selectedFacultyDbFields = getFacultySelectedDbFieldsInResponseData(fs);
-                    if (selectedFacultyDbFields != null) {
-                        return facultyRepository.findById(createdDepartment.getFacultyId(), selectedFacultyDbFields).map(faculty -> {
-                            createdDepartment.setFaculty(faculty);
-                            return createDepartmentResponse(createdDepartment);
-                        });
-                    }
+                            List<String> selectedFacultyDbFields = getFacultySelectedDbFieldsInResponseData(fs);
+                            if (selectedFacultyDbFields != null) {
+                                return facultyRepository.findById(createdDepartment.getFacultyId(), selectedFacultyDbFields).map(faculty -> {
+                                    createdDepartment.setFaculty(faculty);
+                                    return CreateMutationResponse.<Department, DepartmentCreateErrorStatus>successfulCreateMutationResponse(createdDepartment);
+                                });
+                            }
 
-                    return Mono.just(createDepartmentResponse(createdDepartment));
-                }
-              )
+                            return Mono.just(CreateMutationResponse.<Department, DepartmentCreateErrorStatus>successfulCreateMutationResponse(createdDepartment));
+                        }
+                )
                 .onErrorResume(e -> {
-                    DepartmentCreateErrorStatus errorStatus = DepartmentCreateErrorStatus.INTERNAL_SERVER_ERROR;
+                    CreateMutationResponse<Department, DepartmentCreateErrorStatus> errorMutationResponse = INTERNAL_SERVER_ERROR_CREATE_MUTATION_RESPONSE;
+
                     if (e instanceof DuplicateKeyException
                             && "duplicate key value violates unique constraint \"departments_name_key\"".equals(e.getCause().getMessage())) {
 
-                        errorStatus = DepartmentCreateErrorStatus.DUPLICATED_NAME;
+                        errorMutationResponse = DUPLICATED_NAME_CREATE_MUTATION_RESPONSE;
                     } else if (e instanceof DataIntegrityViolationException &&
                             "insert or update on table \"departments\" violates foreign key constraint \"departments_faculty_id_fkey\"".equals(e.getCause().getMessage())) {
 
-                        errorStatus = DepartmentCreateErrorStatus.FACULTY_NOT_FOUND;
+                        errorMutationResponse = FACULTY_NOT_FOUND_CREATE_MUTATION_RESPONSE;
                     }
 
-                    return Mono.just(errorCreateMutationResponse(errorStatus));
+                    return Mono.just(errorMutationResponse);
                 });
     }
 
@@ -87,13 +112,40 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
     }
 
     @Override
-    public Mono<MutationResponse<DepartmentDeleteErrorStatus>> delete(Long id) {
-        return null;
+    protected Mono<Long> count() {
+        return departmentRepository.count();
     }
 
     @Override
-    protected Mono<Long> count() {
-        return departmentRepository.count();
+    public Mono<MutationResponse<DepartmentUpdateErrorStatus>> update(Long id, Department department) {
+        department.setId(id);
+
+        return departmentRepository.update(department).map(isDeleted ->
+                        (MutationResponse<DepartmentUpdateErrorStatus>) (isDeleted ? successfulMutationResponse()
+                                : DEPARTMENT_NOT_FOUND_UPDATE_MUTATION_RESPONSE))
+                .onErrorResume(e -> {
+                    MutationResponse<DepartmentUpdateErrorStatus> errorMutationResponse = INTERNAL_SERVER_ERROR_UPDATE_MUTATION_RESPONSE;
+
+                    if (e instanceof DuplicateKeyException
+                            && "duplicate key value violates unique constraint \"departments_name_key\"".equals(e.getCause().getMessage())) {
+
+                        errorMutationResponse = DUPLICATED_NAME_UPDATE_MUTATION_RESPONSE;
+                    } else if (e instanceof DataIntegrityViolationException &&
+                            "insert or update on table \"departments\" violates foreign key constraint \"departments_faculty_id_fkey\"".equals(e.getCause().getMessage())) {
+
+                        errorMutationResponse = FACULTY_NOT_FOUND_UPDATE_MUTATION_RESPONSE;
+                    }
+
+                    return Mono.just(errorMutationResponse);
+                });
+    }
+
+    @Override
+    public Mono<MutationResponse<DepartmentDeleteErrorStatus>> delete(Long id) {
+        return departmentRepository.delete(id).map(isDeleted ->
+                        (MutationResponse<DepartmentDeleteErrorStatus>) (isDeleted ? successfulMutationResponse()
+                                : DEPARTMENT_NOT_FOUND_DELETE_MUTATION_RESPONSE))
+                .onErrorReturn(INTERNAL_SERVER_ERROR_DELETE_MUTATION_RESPONSE);
     }
 
     @Override
@@ -123,18 +175,10 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
             DataFetchingFieldSelectionSet dataFs = dataFieldSearchResult.get(0).getSelectionSet();
             List<SelectedField> facultyFieldSearchResult = dataFs.getFields(GraphQlSchemaConstants.FACULTY);
             if (facultyFieldSearchResult.size() == 1) {
-                return getFacultySelectedDbFields(facultyFieldSearchResult.get(0).getSelectionSet());
+                return getSelectedDbFields(Faculty.selectableDbFields, facultyFieldSearchResult.get(0).getSelectionSet());
             }
         }
 
         return null;
-    }
-
-    private List<String> getFacultySelectedDbFields(DataFetchingFieldSelectionSet facultyFs) {
-        return getSelectedDbFields(Faculty.selectableDbFields, facultyFs);
-    }
-
-    private CreateMutationResponse<Department, DepartmentCreateErrorStatus> createDepartmentResponse(Department department) {
-        return successfulCreateMutationResponse(department);
     }
 }
