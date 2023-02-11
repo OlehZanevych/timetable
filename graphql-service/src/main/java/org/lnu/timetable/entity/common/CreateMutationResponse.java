@@ -1,9 +1,9 @@
 package org.lnu.timetable.entity.common;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@AllArgsConstructor
-public class CreateMutationResponse<Entity, ErrorStatus> {
+@Getter
+public class CreateMutationResponse<Entity, ErrorStatus> extends MutationResponse<ErrorStatus> {
     public static <Entity, ErrorStatus> CreateMutationResponse<Entity, ErrorStatus> successfulCreateMutationResponse(Entity data) {
         return new CreateMutationResponse<>(true, data, null);
     }
@@ -12,8 +12,10 @@ public class CreateMutationResponse<Entity, ErrorStatus> {
         return new CreateMutationResponse<>(false, null, errorStatus);
     }
 
-    private final boolean isSuccess;
     private final Entity data;
-    private final ErrorStatus errorStatus;
 
+    public CreateMutationResponse(boolean isSuccess, Entity data, ErrorStatus errorStatus) {
+        super(isSuccess, errorStatus);
+        this.data = data;
+    }
 }

@@ -1,7 +1,9 @@
 package org.lnu.timetable.entity.common;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public class MutationResponse<ErrorStatus> {
     private static MutationResponse SUCCESSFUL_MUTATION_RESPONSE = new MutationResponse<>(true, null);
@@ -17,4 +19,7 @@ public class MutationResponse<ErrorStatus> {
 
     private final ErrorStatus errorStatus;
 
+    public boolean getIsSuccess() {
+        return isSuccess;
+    }
 }
