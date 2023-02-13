@@ -1,4 +1,4 @@
-package org.lnu.timetable.controller.query.faculties;
+package org.lnu.timetable.controller.query.faculty;
 
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;

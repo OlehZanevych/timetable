@@ -28,7 +28,7 @@ INSERT INTO departments (id, name, faculty_id, email, phone, info) VALUES
 (5, 'Прикладної математики', 13, 'kpm@lnu.edu.ua', '(032) 239-41-78', 'Тестова інформація про кафедру'),
 (6, 'Теорії оптимальних процесів', 13, 'ktop@lnu.edu.ua', '(032) 239-47-91', 'Тестова інформація про кафедру'),
 (7, 'Математичного моделювання соціально-економічних процесів', 13, 'kafmmsep@lnu.edu.ua', '(032) 239-43-51', 'Тестова інформація про кафедру');
-SELECT setval('faculties_id_seq', 7);
+SELECT setval('departments_id_seq', 7);
 
 INSERT INTO scientific_degrees(id, name) VALUES
 (1, 'Кандидат фізико-математичних наук'),

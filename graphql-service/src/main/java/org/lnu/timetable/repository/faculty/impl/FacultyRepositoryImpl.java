@@ -3,7 +3,9 @@ package org.lnu.timetable.repository.faculty.impl;
 import lombok.AllArgsConstructor;
 import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -23,6 +25,11 @@ import static org.springframework.data.relational.core.query.Query.query;
 public class FacultyRepositoryImpl implements FacultyRepository {
 
     private final R2dbcEntityTemplate r2dbcEntityTemplate;
+
+    @Override
+    public Mono<Faculty> create(Faculty faculty) {
+        return r2dbcEntityTemplate.insert(faculty);
+    }
 
     @Override
     public Flux<Faculty> findAll(Collection<String> fields, int limit, long offset) {
@@ -47,5 +54,19 @@ public class FacultyRepositoryImpl implements FacultyRepository {
     @Override
     public Mono<Long> count() {
         return r2dbcEntityTemplate.count(empty(), Faculty.class);
+    }
+
+    @Override
+    public Mono<Boolean> update(Faculty faculty) {
+        return r2dbcEntityTemplate.update(faculty)
+                .map(updatedFaculty -> true)
+                .onErrorReturn(TransientDataAccessResourceException.class, false);
+    }
+
+    @Override
+    public Mono<Boolean> delete(Long id) {
+        return r2dbcEntityTemplate.delete(Faculty.class)
+                .matching(query(Criteria.where(ID).is(id))).all()
+                .map(affectedRows -> affectedRows > 0);
     }
 }

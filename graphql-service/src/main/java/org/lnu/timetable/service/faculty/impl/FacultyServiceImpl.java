@@ -4,14 +4,20 @@ import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
 import graphql.schema.SelectedField;
 import org.lnu.timetable.constants.GraphQlSchemaConstants;
+import org.lnu.timetable.entity.common.CreateMutationResponse;
+import org.lnu.timetable.entity.common.MutationResponse;
 import org.lnu.timetable.entity.department.Department;
 import org.lnu.timetable.entity.faculty.Faculty;
+import org.lnu.timetable.entity.faculty.error.status.FacultyCreateErrorStatus;
+import org.lnu.timetable.entity.faculty.error.status.FacultyDeleteErrorStatus;
+import org.lnu.timetable.entity.faculty.error.status.FacultyUpdateErrorStatus;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
 import org.lnu.timetable.service.common.impl.CommonEntityServiceImpl;
 import org.lnu.timetable.service.faculty.FacultyService;
 import org.lnu.timetable.service.file.storage.FileStorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,6 +29,9 @@ import java.util.Set;
 import static org.lnu.timetable.constants.ApiConstants.FACULTIES_ROOT_URI;
 import static org.lnu.timetable.constants.ApiConstants.FACULTY_LOGO_SUB_URI;
 import static org.lnu.timetable.constants.GraphQlContextConstants.DEPARTMENT_SELECTED_DB_FIELDS;
+import static org.lnu.timetable.entity.common.CreateMutationResponse.errorCreateMutationResponse;
+import static org.lnu.timetable.entity.common.MutationResponse.errorMutationResponse;
+import static org.lnu.timetable.entity.common.MutationResponse.successfulMutationResponse;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFieldSet;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 
@@ -30,6 +39,24 @@ import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 public class FacultyServiceImpl extends CommonEntityServiceImpl<Faculty> implements FacultyService {
 
     private static final String FACULTY_LOGO_FOLDER = "faculties/logos/";
+
+    private static final CreateMutationResponse<Faculty, FacultyCreateErrorStatus> DUPLICATED_NAME_CREATE_MUTATION_RESPONSE
+            = errorCreateMutationResponse(FacultyCreateErrorStatus.DUPLICATED_NAME);
+
+    private static final CreateMutationResponse<Faculty, FacultyCreateErrorStatus> INTERNAL_SERVER_ERROR_CREATE_MUTATION_RESPONSE
+            = errorCreateMutationResponse(FacultyCreateErrorStatus.INTERNAL_SERVER_ERROR);
+
+    private static final MutationResponse<FacultyUpdateErrorStatus> FACULTY_NOT_FOUND_UPDATE_MUTATION_RESPONSE
+            = errorMutationResponse(FacultyUpdateErrorStatus.FACULTY_NOT_FOUND);
+    private static final MutationResponse<FacultyUpdateErrorStatus> DUPLICATED_NAME_UPDATE_MUTATION_RESPONSE
+            = errorMutationResponse(FacultyUpdateErrorStatus.DUPLICATED_NAME);
+    private static final MutationResponse<FacultyUpdateErrorStatus> INTERNAL_SERVER_ERROR_UPDATE_MUTATION_RESPONSE
+            = errorMutationResponse(FacultyUpdateErrorStatus.INTERNAL_SERVER_ERROR);
+
+    private static final MutationResponse<FacultyDeleteErrorStatus> FACULTY_NOT_FOUND_DELETE_MUTATION_RESPONSE
+            = errorMutationResponse(FacultyDeleteErrorStatus.FACULTY_NOT_FOUND);
+    private static final MutationResponse<FacultyDeleteErrorStatus> INTERNAL_SERVER_ERROR_DELETE_MUTATION_RESPONSE
+            = errorMutationResponse(FacultyDeleteErrorStatus.INTERNAL_SERVER_ERROR);
 
     private final FacultyRepository facultyRepository;
 
@@ -43,6 +70,23 @@ public class FacultyServiceImpl extends CommonEntityServiceImpl<Faculty> impleme
         this.facultyRepository = facultyRepository;
         this.fileStorageService = fileStorageService;
         this.serviceHost = serviceHost;
+    }
+
+    @Override
+    public Mono<CreateMutationResponse<Faculty, FacultyCreateErrorStatus>> create(Faculty faculty) {
+        return facultyRepository.create(faculty)
+                .map(createdFaculty -> CreateMutationResponse.<Faculty, FacultyCreateErrorStatus>successfulCreateMutationResponse(createdFaculty))
+                .onErrorResume(e -> {
+                    CreateMutationResponse<Faculty, FacultyCreateErrorStatus> errorMutationResponse = INTERNAL_SERVER_ERROR_CREATE_MUTATION_RESPONSE;
+
+                    if (e instanceof DuplicateKeyException
+                            && "duplicate key value violates unique constraint \"faculties_name_key\"".equals(e.getCause().getMessage())) {
+
+                        errorMutationResponse = DUPLICATED_NAME_CREATE_MUTATION_RESPONSE;
+                    }
+
+                    return Mono.just(errorMutationResponse);
+                });
     }
 
     @Override
@@ -61,6 +105,34 @@ public class FacultyServiceImpl extends CommonEntityServiceImpl<Faculty> impleme
     @Override
     protected Mono<Long> count() {
         return facultyRepository.count();
+    }
+
+    @Override
+    public Mono<MutationResponse<FacultyUpdateErrorStatus>> update(Long id, Faculty faculty) {
+        faculty.setId(id);
+
+        return facultyRepository.update(faculty).map(isDeleted ->
+                        (MutationResponse<FacultyUpdateErrorStatus>) (isDeleted ? successfulMutationResponse()
+                                : FACULTY_NOT_FOUND_UPDATE_MUTATION_RESPONSE))
+                .onErrorResume(e -> {
+                    MutationResponse<FacultyUpdateErrorStatus> errorMutationResponse = INTERNAL_SERVER_ERROR_UPDATE_MUTATION_RESPONSE;
+
+                    if (e instanceof DuplicateKeyException
+                            && "duplicate key value violates unique constraint \"faculties_name_key\"".equals(e.getCause().getMessage())) {
+
+                        errorMutationResponse = DUPLICATED_NAME_UPDATE_MUTATION_RESPONSE;
+                    }
+
+                    return Mono.just(errorMutationResponse);
+                });
+    }
+
+    @Override
+    public Mono<MutationResponse<FacultyDeleteErrorStatus>> delete(Long id) {
+        return facultyRepository.delete(id).map(isDeleted ->
+                        (MutationResponse<FacultyDeleteErrorStatus>) (isDeleted ? successfulMutationResponse()
+                                : FACULTY_NOT_FOUND_DELETE_MUTATION_RESPONSE))
+                .onErrorReturn(INTERNAL_SERVER_ERROR_DELETE_MUTATION_RESPONSE);
     }
 
     @Override

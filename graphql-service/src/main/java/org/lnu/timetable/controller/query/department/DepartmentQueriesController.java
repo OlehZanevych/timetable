@@ -1,4 +1,4 @@
-package org.lnu.timetable.controller.query.departments;
+package org.lnu.timetable.controller.query.department;
 
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
