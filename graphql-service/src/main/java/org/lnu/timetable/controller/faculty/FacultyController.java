@@ -42,6 +42,11 @@ public class FacultyController {
         return facultyService.findLogoUri(faculty);
     }
 
+    @SchemaMapping(typeName = "FacultyItem", field = "logoUri")
+    public Mono<String> facultyItemLogoUri(Faculty faculty) {
+        return facultyService.findLogoUri(faculty);
+    }
+
     @ResponseBody
     @GetMapping(value = "{facultyId}/" + FACULTY_LOGO_SUB_URI, produces = {
         MediaType.IMAGE_PNG_VALUE,
