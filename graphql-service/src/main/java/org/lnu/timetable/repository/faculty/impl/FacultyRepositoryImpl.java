@@ -2,6 +2,7 @@ package org.lnu.timetable.repository.faculty.impl;
 
 import lombok.AllArgsConstructor;
 import org.lnu.timetable.entity.faculty.Faculty;
+import org.lnu.timetable.entity.faculty.field.selection.FacultyFieldSelection;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -32,8 +33,8 @@ public class FacultyRepositoryImpl implements FacultyRepository {
     }
 
     @Override
-    public Flux<Faculty> findAll(Collection<String> fields, int limit, long offset) {
-        Query query = empty().columns(fields).limit(limit)
+    public Flux<Faculty> findAll(FacultyFieldSelection fieldSelection, int limit, long offset) {
+        Query query = empty().columns(fieldSelection.getRootFields()).limit(limit)
                 .sort(by(asc("name")));
 
         if (offset != 0) {
@@ -46,9 +47,9 @@ public class FacultyRepositoryImpl implements FacultyRepository {
     }
 
     @Override
-    public Mono<Faculty> findById(Long id, Collection<String> fields) {
+    public Mono<Faculty> findById(Long id, FacultyFieldSelection fieldSelection) {
         return r2dbcEntityTemplate.select(Faculty.class)
-            .matching(query(where(ID).is(id)).columns(fields)).one();
+            .matching(query(where(ID).is(id)).columns(fieldSelection.getRootFields())).one();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.lnu.timetable.util;
 
-import org.lnu.timetable.entity.common.Connection;
+import org.lnu.timetable.entity.common.response.Connection;
 
 import java.util.List;
 

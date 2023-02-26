@@ -1,19 +1,31 @@
 package org.lnu.timetable.repository.department.impl;
 
+import io.r2dbc.spi.Row;
+import io.r2dbc.spi.RowMetadata;
 import lombok.AllArgsConstructor;
+import org.lnu.timetable.entity.common.column.ColumnValue;
 import org.lnu.timetable.entity.department.Department;
+import org.lnu.timetable.entity.department.field.selection.DepartmentFieldSelection;
+import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.repository.department.DepartmentRepository;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
-import org.springframework.data.relational.core.query.Query;
+import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.BiFunction;
 
+import static java.util.stream.Collectors.joining;
 import static org.lnu.timetable.constants.ModelConstants.ID;
+import static org.lnu.timetable.util.EntityUtil.assignColumnValues;
+import static org.lnu.timetable.util.EntityUtil.formatColumnSelection;
 import static org.springframework.data.domain.Sort.Order.asc;
 import static org.springframework.data.domain.Sort.by;
 import static org.springframework.data.relational.core.query.Criteria.where;
@@ -24,6 +36,43 @@ import static org.springframework.data.relational.core.query.Query.query;
 @AllArgsConstructor
 public class DepartmentRepositoryImpl implements DepartmentRepository {
 
+    public static final BiFunction<Row, RowMetadata, Department> DEPARTMENT_MAPPER = (row, rowMetaData) -> {
+        List<ColumnValue> departmentColumnValues = new ArrayList<>();
+        List<ColumnValue> facultyColumnValues = new ArrayList<>();
+
+        rowMetaData.getColumnMetadatas().forEach(columnMetadata -> {
+            String column = columnMetadata.getName();
+            Object value = row.get(column);
+
+            // Remove table alias prefix, which consists of 2 letters
+            String entityColumnName = column.substring(2);
+            ColumnValue columnValue = new ColumnValue(entityColumnName, value);
+
+            if (column.startsWith("f_")) {
+                facultyColumnValues.add(columnValue);
+            } else {
+                departmentColumnValues.add(columnValue);
+            }
+        });
+
+
+        Department department = new Department();
+        departmentColumnValues.forEach(columnValue -> {
+            assignColumnValues(department, departmentColumnValues);
+        });
+
+        if (!facultyColumnValues.isEmpty()) {
+            Faculty faculty = new Faculty();
+            assignColumnValues(faculty, facultyColumnValues);
+
+            department.setFaculty(faculty);
+        }
+
+        return department;
+    };
+
+    private DatabaseClient databaseClient;
+
     private final R2dbcEntityTemplate r2dbcEntityTemplate;
 
     @Override
@@ -32,23 +81,29 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
     }
 
     @Override
-    public Flux<Department> findAll(Collection<String> fields, int limit, long offset) {
-        Query query = empty().columns(fields).limit(limit)
-                .sort(by(asc("name")));
+    public Flux<Department> findAll(DepartmentFieldSelection fieldSelection, int limit, long offset) {
+        String baseQuery = createDepartmentSelectStatement(fieldSelection);
+
+        StringBuilder sb = new StringBuilder(baseQuery);
+        sb.append(" ORDER BY d.name");
+        sb.append(" LIMIT " + limit);
 
         if (offset != 0) {
-            query = query.offset(offset);
+            sb.append(" OFFSET " + offset);
         }
 
-        return r2dbcEntityTemplate.select(Department.class)
-                .matching(query)
-                .all();
+        String query = sb.toString();
+
+        return databaseClient.sql(query).map(DEPARTMENT_MAPPER).all();
     }
 
     @Override
-    public Mono<Department> findById(Long id, Collection<String> fields) {
-        return r2dbcEntityTemplate.select(Department.class)
-                .matching(query(where(ID).is(id)).columns(fields)).one();
+    public Mono<Department> findById(Long id, DepartmentFieldSelection fieldSelection) {
+        String baseQuery = createDepartmentSelectStatement(fieldSelection);
+        String query = baseQuery + " WHERE d.id = :id";
+
+        return databaseClient.sql(query).bind("id", id).map(DEPARTMENT_MAPPER)
+                .one();
     }
 
     @Override
@@ -73,8 +128,36 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
     @Override
     public Flux<Department> findByFacultyIds(Collection<Long> facultyIds, Collection<String> fields) {
         return r2dbcEntityTemplate.select(Department.class)
-            .matching(query(where("facultyId").in(facultyIds))
-                .columns(fields)
-                .sort(by(asc("name")))).all();
+                .matching(query(where("facultyId").in(facultyIds))
+                        .columns(fields)
+                        .sort(by(asc("name")))).all();
+    }
+
+    private String createDepartmentSelectStatement(DepartmentFieldSelection fieldSelection) {
+        List<String> fields = new ArrayList<>(fieldSelection.getRootFields().stream()
+                .map(field -> formatColumnSelection(field, "d")).toList());
+
+        List<String> facultyFields = fieldSelection.getFacultyFields();
+        boolean isFacultyJoinNeeded = false;
+        if (!CollectionUtils.isEmpty(facultyFields)) {
+            if (facultyFields.size() == 1 && ID.equals(facultyFields.get(0))) {
+                fields.add("d.faculty_id f_id");
+            } else {
+                isFacultyJoinNeeded = true;
+
+                facultyFields.forEach(facultyField -> {
+                    fields.add(formatColumnSelection(facultyField, "f"));
+                });
+            }
+        }
+
+        StringBuilder sb = new StringBuilder("SELECT ");
+        sb.append(fields.stream().collect(joining(", ")));
+        sb.append(" FROM " + Department.TABLE + " d");
+        if (isFacultyJoinNeeded) {
+            sb.append(" JOIN " + Faculty.TABLE + " f ON (f.id = d.faculty_id)");
+        }
+
+        return sb.toString();
     }
 }

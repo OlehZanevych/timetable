@@ -2,8 +2,8 @@ package org.lnu.timetable.controller.mutation.department;
 
 import graphql.schema.DataFetchingFieldSelectionSet;
 import lombok.AllArgsConstructor;
-import org.lnu.timetable.entity.common.CreateMutationResponse;
-import org.lnu.timetable.entity.common.MutationResponse;
+import org.lnu.timetable.entity.common.response.CreateMutationResponse;
+import org.lnu.timetable.entity.common.response.MutationResponse;
 import org.lnu.timetable.entity.department.Department;
 import org.lnu.timetable.entity.department.error.status.DepartmentCreateErrorStatus;
 import org.lnu.timetable.entity.department.error.status.DepartmentDeleteErrorStatus;

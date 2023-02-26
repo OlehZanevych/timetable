@@ -2,7 +2,7 @@ package org.lnu.timetable.service.common;
 
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
-import org.lnu.timetable.entity.common.Connection;
+import org.lnu.timetable.entity.common.response.Connection;
 import reactor.core.publisher.Mono;
 
 public interface CommonEntityService<Entity> {

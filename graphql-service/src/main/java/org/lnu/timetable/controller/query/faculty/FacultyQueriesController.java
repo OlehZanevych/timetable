@@ -3,7 +3,7 @@ package org.lnu.timetable.controller.query.faculty;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
 import lombok.AllArgsConstructor;
-import org.lnu.timetable.entity.common.Connection;
+import org.lnu.timetable.entity.common.response.Connection;
 import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.service.faculty.FacultyService;
 import org.springframework.graphql.data.method.annotation.Argument;

@@ -7,8 +7,11 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.List;
 
 @Data
-@Table("faculties")
+@Table(Faculty.TABLE)
 public class Faculty {
+
+    public static final String TABLE = "faculties";
+
     public static final List<String> selectableDbFields = List.of(
         "name",
         "website",

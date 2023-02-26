@@ -4,13 +4,14 @@ import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
 import graphql.schema.SelectedField;
 import org.lnu.timetable.constants.GraphQlSchemaConstants;
-import org.lnu.timetable.entity.common.CreateMutationResponse;
-import org.lnu.timetable.entity.common.MutationResponse;
+import org.lnu.timetable.entity.common.response.CreateMutationResponse;
+import org.lnu.timetable.entity.common.response.MutationResponse;
 import org.lnu.timetable.entity.department.Department;
 import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.entity.faculty.error.status.FacultyCreateErrorStatus;
 import org.lnu.timetable.entity.faculty.error.status.FacultyDeleteErrorStatus;
 import org.lnu.timetable.entity.faculty.error.status.FacultyUpdateErrorStatus;
+import org.lnu.timetable.entity.faculty.field.selection.FacultyFieldSelection;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
 import org.lnu.timetable.service.common.impl.CommonEntityServiceImpl;
 import org.lnu.timetable.service.faculty.FacultyService;
@@ -29,9 +30,10 @@ import java.util.Set;
 import static org.lnu.timetable.constants.ApiConstants.FACULTIES_ROOT_URI;
 import static org.lnu.timetable.constants.ApiConstants.FACULTY_LOGO_SUB_URI;
 import static org.lnu.timetable.constants.GraphQlContextConstants.DEPARTMENT_SELECTED_DB_FIELDS;
-import static org.lnu.timetable.entity.common.CreateMutationResponse.errorCreateMutationResponse;
-import static org.lnu.timetable.entity.common.MutationResponse.errorMutationResponse;
-import static org.lnu.timetable.entity.common.MutationResponse.successfulMutationResponse;
+import static org.lnu.timetable.constants.GraphQlSchemaConstants.FACULTY;
+import static org.lnu.timetable.entity.common.response.CreateMutationResponse.errorCreateMutationResponse;
+import static org.lnu.timetable.entity.common.response.MutationResponse.errorMutationResponse;
+import static org.lnu.timetable.entity.common.response.MutationResponse.successfulMutationResponse;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFieldSet;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 
@@ -90,16 +92,18 @@ public class FacultyServiceImpl extends CommonEntityServiceImpl<Faculty> impleme
     }
 
     @Override
-    protected Flux<Faculty> findAll(Collection<String> fields, int limit, long offset) {
-        return facultyRepository.findAll(fields, limit, offset);
+    protected Flux<Faculty> findAll(DataFetchingFieldSelectionSet fs, int limit, long offset) {
+        FacultyFieldSelection fieldSelection = createFacultyFieldSelection(fs);
+        return facultyRepository.findAll(fieldSelection, limit, offset);
     }
 
     @Override
     public Mono<Faculty> findById(Long id, DataFetchingFieldSelectionSet fs, GraphQLContext context) {
-        List<String> selectedDbFields = getSelectedDbFields(Faculty.selectableDbFields, fs);
+        FacultyFieldSelection fieldSelection = createFacultyFieldSelection(fs);
+
         saveDepartmentSelectedDbFieldsIntoContext(fs, context);
 
-        return facultyRepository.findById(id, selectedDbFields);
+        return facultyRepository.findById(id, fieldSelection);
     }
 
     @Override
@@ -154,6 +158,11 @@ public class FacultyServiceImpl extends CommonEntityServiceImpl<Faculty> impleme
     public Flux<DataBuffer> readFacultyLogo(Long facultyId) {
         String facultyLogoFileName = getFacultyLogoFileName(facultyId);
         return fileStorageService.readFile(facultyLogoFileName);
+    }
+
+    private FacultyFieldSelection createFacultyFieldSelection(DataFetchingFieldSelectionSet fs) {
+        List<String> rootFields = getSelectedDbFields(Faculty.selectableDbFields, fs);
+        return new FacultyFieldSelection(rootFields);
     }
 
     private void saveDepartmentSelectedDbFieldsIntoContext(DataFetchingFieldSelectionSet fs, GraphQLContext context) {

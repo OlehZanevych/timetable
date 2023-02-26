@@ -1,6 +1,6 @@
 type DepartmentQueries {
-    departmentConnection(limit: Int! = 1000, offset: Int! = 0): FacultyConnection
-    department(id: ID!): Faculty
+    departmentConnection(limit: Int! = 1000, offset: Int! = 0): DepartmentConnection
+    department(id: ID!): Department
 }
 
 type DepartmentMutations {

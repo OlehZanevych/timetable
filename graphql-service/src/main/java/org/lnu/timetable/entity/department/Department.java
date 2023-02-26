@@ -8,12 +8,13 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.List;
 
 @Data
-@Table("departments")
+@Table(Department.TABLE)
 public class Department {
+
+    public static final String TABLE = "departments";
 
     public static final List<String> selectableDbFields = List.of(
         "name",
-        "facultyId",
         "email",
         "phone",
         "info"

@@ -1,7 +1,7 @@
 package org.lnu.timetable.service.faculty;
 
-import org.lnu.timetable.entity.common.CreateMutationResponse;
-import org.lnu.timetable.entity.common.MutationResponse;
+import org.lnu.timetable.entity.common.response.CreateMutationResponse;
+import org.lnu.timetable.entity.common.response.MutationResponse;
 import org.lnu.timetable.entity.faculty.Faculty;
 import org.lnu.timetable.entity.faculty.error.status.FacultyCreateErrorStatus;
 import org.lnu.timetable.entity.faculty.error.status.FacultyDeleteErrorStatus;

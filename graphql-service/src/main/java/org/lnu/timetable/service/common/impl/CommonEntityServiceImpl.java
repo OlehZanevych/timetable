@@ -3,9 +3,8 @@ package org.lnu.timetable.service.common.impl;
 import graphql.GraphQLContext;
 import graphql.schema.DataFetchingFieldSelectionSet;
 import graphql.schema.SelectedField;
-import org.lnu.timetable.entity.common.Connection;
-import org.lnu.timetable.entity.common.PageInfo;
-import org.lnu.timetable.entity.faculty.Faculty;
+import org.lnu.timetable.entity.common.response.Connection;
+import org.lnu.timetable.entity.common.response.PageInfo;
 import org.lnu.timetable.service.common.CommonEntityService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -26,19 +25,14 @@ public abstract class CommonEntityServiceImpl<Entity> implements CommonEntitySer
         List<SelectedField> nodesFieldSearchResult = fs.getFields(NODES);
         boolean isNodesFieldSelected = nodesFieldSearchResult.size() == 1;
 
-        List<String> selectedDbFields;
         if (isNodesFieldSelected || checkIfCurrentPageInfoRequired(fs)) {
+            DataFetchingFieldSelectionSet nodesFs = null;
             if (isNodesFieldSelected) {
-                DataFetchingFieldSelectionSet nodesFs = nodesFieldSearchResult.get(0).getSelectionSet();
-
-                selectedDbFields = getSelectedDbFields(Faculty.selectableDbFields, nodesFs);
-
+                nodesFs = nodesFieldSearchResult.get(0).getSelectionSet();
                 processNodesFieldSelection(nodesFs, context);
-            } else {
-                selectedDbFields = ID_FIELD_ONLY;
             }
 
-            return findAll(selectedDbFields, limit, offset).collectList().flatMap(nodes -> {
+            return findAll(nodesFs, limit, offset).collectList().flatMap(nodes -> {
                 if (fs.getFields(PAGE_INFO).size() == 1) {
                     if (nodes.size() < limit) {
                         long total = offset + nodes.size();
@@ -72,7 +66,7 @@ public abstract class CommonEntityServiceImpl<Entity> implements CommonEntitySer
         return pageInfoFs.contains(NEXT_PAGE_CURSOR) || pageInfoFs.contains(HAS_NEXT_PAGE);
     }
 
-    protected abstract Flux<Entity> findAll(Collection<String> fields, int limit, long offset);
+    protected abstract Flux<Entity> findAll(DataFetchingFieldSelectionSet fs, int limit, long offset);
 
     protected abstract Mono<Long> count();
 

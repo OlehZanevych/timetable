@@ -1,4 +1,4 @@
-package org.lnu.timetable.entity.common;
+package org.lnu.timetable.entity.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

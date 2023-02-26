@@ -5,13 +5,15 @@ import graphql.schema.DataFetchingFieldSelectionSet;
 import graphql.schema.SelectedField;
 import lombok.AllArgsConstructor;
 import org.lnu.timetable.constants.GraphQlSchemaConstants;
-import org.lnu.timetable.entity.common.CreateMutationResponse;
-import org.lnu.timetable.entity.common.MutationResponse;
+import org.lnu.timetable.entity.common.response.CreateMutationResponse;
+import org.lnu.timetable.entity.common.response.MutationResponse;
 import org.lnu.timetable.entity.department.Department;
 import org.lnu.timetable.entity.department.error.status.DepartmentCreateErrorStatus;
 import org.lnu.timetable.entity.department.error.status.DepartmentDeleteErrorStatus;
 import org.lnu.timetable.entity.department.error.status.DepartmentUpdateErrorStatus;
+import org.lnu.timetable.entity.department.field.selection.DepartmentFieldSelection;
 import org.lnu.timetable.entity.faculty.Faculty;
+import org.lnu.timetable.entity.faculty.field.selection.FacultyFieldSelection;
 import org.lnu.timetable.repository.department.DepartmentRepository;
 import org.lnu.timetable.repository.faculty.FacultyRepository;
 import org.lnu.timetable.service.common.impl.CommonEntityServiceImpl;
@@ -22,7 +24,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,9 +33,10 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 import static org.lnu.timetable.constants.GraphQlContextConstants.DEPARTMENT_SELECTED_DB_FIELDS;
-import static org.lnu.timetable.entity.common.CreateMutationResponse.errorCreateMutationResponse;
-import static org.lnu.timetable.entity.common.MutationResponse.errorMutationResponse;
-import static org.lnu.timetable.entity.common.MutationResponse.successfulMutationResponse;
+import static org.lnu.timetable.constants.GraphQlSchemaConstants.FACULTY;
+import static org.lnu.timetable.entity.common.response.CreateMutationResponse.errorCreateMutationResponse;
+import static org.lnu.timetable.entity.common.response.MutationResponse.errorMutationResponse;
+import static org.lnu.timetable.entity.common.response.MutationResponse.successfulMutationResponse;
 import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 
 @Service
@@ -73,10 +75,11 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
                 .flatMap(createdDepartment -> {
                             List<String> selectedFacultyDbFields = getFacultySelectedDbFieldsInResponseData(fs);
                             if (selectedFacultyDbFields != null) {
-                                return facultyRepository.findById(createdDepartment.getFacultyId(), selectedFacultyDbFields).map(faculty -> {
-                                    createdDepartment.setFaculty(faculty);
-                                    return CreateMutationResponse.<Department, DepartmentCreateErrorStatus>successfulCreateMutationResponse(createdDepartment);
-                                });
+                                return facultyRepository.findById(createdDepartment.getFacultyId(), new FacultyFieldSelection(selectedFacultyDbFields))
+                                        .map(faculty -> {
+                                            createdDepartment.setFaculty(faculty);
+                                            return CreateMutationResponse.<Department, DepartmentCreateErrorStatus>successfulCreateMutationResponse(createdDepartment);
+                                        });
                             }
 
                             return Mono.just(CreateMutationResponse.<Department, DepartmentCreateErrorStatus>successfulCreateMutationResponse(createdDepartment));
@@ -100,15 +103,15 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
     }
 
     @Override
-    protected Flux<Department> findAll(Collection<String> fields, int limit, long offset) {
-        return departmentRepository.findAll(fields, limit, offset);
+    protected Flux<Department> findAll(DataFetchingFieldSelectionSet fs, int limit, long offset) {
+        DepartmentFieldSelection fieldSelection = createDepartmentFieldSelection(fs);
+        return departmentRepository.findAll(fieldSelection, limit, offset);
     }
 
     @Override
     public Mono<Department> findById(Long id, DataFetchingFieldSelectionSet fs, GraphQLContext context) {
-        List<String> selectedDbFields = getSelectedDbFields(Department.selectableDbFields, fs);
-
-        return departmentRepository.findById(id, selectedDbFields);
+        DepartmentFieldSelection fieldSelection = createDepartmentFieldSelection(fs);
+        return departmentRepository.findById(id, fieldSelection);
     }
 
     @Override
@@ -173,12 +176,25 @@ public class DepartmentServiceImpl extends CommonEntityServiceImpl<Department> i
         List<SelectedField> dataFieldSearchResult = fs.getFields(GraphQlSchemaConstants.DATA);
         if (dataFieldSearchResult.size() == 1) {
             DataFetchingFieldSelectionSet dataFs = dataFieldSearchResult.get(0).getSelectionSet();
-            List<SelectedField> facultyFieldSearchResult = dataFs.getFields(GraphQlSchemaConstants.FACULTY);
+            List<SelectedField> facultyFieldSearchResult = dataFs.getFields(FACULTY);
             if (facultyFieldSearchResult.size() == 1) {
                 return getSelectedDbFields(Faculty.selectableDbFields, facultyFieldSearchResult.get(0).getSelectionSet());
             }
         }
 
         return null;
+    }
+
+    private DepartmentFieldSelection createDepartmentFieldSelection(DataFetchingFieldSelectionSet fs) {
+        List<String> rootFields = getSelectedDbFields(Department.selectableDbFields, fs);
+        DepartmentFieldSelection fieldSelection = new DepartmentFieldSelection(rootFields);
+
+        List<SelectedField> facultyFieldSearchResult = fs.getFields(FACULTY);
+        if (facultyFieldSearchResult.size() == 1) {
+            List<String> facultyFields = getSelectedDbFields(Faculty.selectableDbFields, facultyFieldSearchResult.get(0).getSelectionSet());
+            fieldSelection.setFacultyFields(facultyFields);
+        }
+
+        return fieldSelection;
     }
 }
