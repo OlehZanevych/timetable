@@ -34,7 +34,7 @@ CREATE TABLE faculties
 CREATE TABLE departments
 (
     id         BIGSERIAL PRIMARY KEY,
-    name       VARCHAR(64) NOT NULL UNIQUE,
+    name       VARCHAR(128) NOT NULL UNIQUE,
     faculty_id BIGINT REFERENCES faculties (id),
     email      VARCHAR(32) NOT NULL,
     phone      VARCHAR(32) NOT NULL,

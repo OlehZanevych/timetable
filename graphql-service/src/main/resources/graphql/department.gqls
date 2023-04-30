@@ -9,7 +9,7 @@ type DepartmentMutations {
     deleteDepartment(id: ID!): DepartmentDeleteResponse
 }
 
-type DepartmentConnection {
+type DepartmentConnection implements Connection {
     nodes: [Department!]!
     pageInfo: ConnectionPageInfo!
 }
