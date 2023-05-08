@@ -15,7 +15,7 @@
 	<description>GraphQL service to work with timetable at LNU</description>
 
 	<properties>
-		<java.version>19</java.version>
+		<java.version>20</java.version>
 
         <r2dbc-postgresql.version>1.0.1.RELEASE</r2dbc-postgresql.version>
         <lombok.version>1.18.26</lombok.version>
