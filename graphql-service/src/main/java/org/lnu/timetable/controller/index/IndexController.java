@@ -10,7 +10,7 @@ import org.springframework.web.reactive.result.view.Rendering;
 @Controller
 public class IndexController {
 
-    @GetMapping
+    @GetMapping("/")
     public Rendering redirectToGraphiQlIde() {
         return Rendering.redirectTo("graphiql").build();
     }

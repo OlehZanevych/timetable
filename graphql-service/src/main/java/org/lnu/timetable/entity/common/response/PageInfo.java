@@ -20,7 +20,7 @@ public class PageInfo {
     public PageInfo(long total, long nextPageOffset) {
         this.total = total;
 
-        hasNextPage = nextPageOffset > total;
+        hasNextPage = nextPageOffset < total;
 
         this.nextPageOffset = hasNextPage ? nextPageOffset : null;
     }

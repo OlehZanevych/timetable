@@ -28,6 +28,7 @@ query FacultyConnection {
       }
       pageInfo {
         total
+        nextPageOffset
         hasNextPage
       }
     }
@@ -61,6 +62,7 @@ query FacultyConnection($limit: Int!, $offset: Int) {
       }
       pageInfo {
         total
+        nextPageOffset
         hasNextPage
       }
     }
@@ -225,6 +227,7 @@ query DepartmentConnection {
       }
       pageInfo {
         total
+        nextPageOffset
         hasNextPage
       }
     }
@@ -258,6 +261,7 @@ query DepartmentConnection($limit: Int!, $offset: Int!) {
       }
       pageInfo {
         total
+        nextPageOffset
         hasNextPage
       }
     }
