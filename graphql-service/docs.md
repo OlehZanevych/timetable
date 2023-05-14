@@ -1,7 +1,25 @@
 # Examples of GraphQL queries and mutations
 
+- [Faculty queries](#faculty_queries)
+    - [Get a list of Faculties](#get_list_of_faculties)
+    - [Get a list of Faculties (with limit and offset)](#get_list_of_faculties_with_limit_and_offset)
+    - [Get Faculty by ID](#get_faculty_by_id)
+    - [Create Faculty](#create_faculty)
+    - [Update Faculty](update_faculty)
+    - [Delete Faculty](delete_faculty)
+- [Department queries](#department_queries)
+    - [Get a list of Departments](#get_list_of_departments)
+    - [Get a list of Departments (with limit and offset)](#get_list_of_departments_with_limit_and_offset)
+    - [Get Department by ID](#get_department_by_id)
+    - [Create Department](#create_department)
+    - [Update Department](update_department)
+    - [Delete Department](delete_department)
+
+
+<a id="faculty_queries" />
 ## Faculties
 
+<a id="get_list_of_faculties" />
 ### Get a list of Faculties
 
 #### Query:
@@ -36,6 +54,7 @@ query FacultyConnection {
 }
 ```
 
+<a id="get_list_of_faculties_with_limit_and_offset" />
 ### Get a list of Faculties (with limit and offset)
 
 #### Query:
@@ -78,6 +97,7 @@ query FacultyConnection($limit: Int!, $offset: Int) {
 }
 ```
 
+<a id="get_faculty_by_id" />
 ### Get Faculty by ID
 
 #### Query:
@@ -112,6 +132,7 @@ query Faculty($id: ID!) {
 }
 ```
 
+<a id="create_faculty" />
 ### Create Faculty
 
 #### Query:
@@ -149,6 +170,7 @@ mutation CreateFaculty($faculty: FacultyInputPayload!) {
 }
 ```
 
+<a id="update_faculty" />
 ### Update Faculty
 
 #### Query:
@@ -178,6 +200,7 @@ mutation UpdateFaculty($id: ID!, $faculty: FacultyInputPayload!) {
 }
 ```
 
+<a id="delete_faculty" />
 ### Delete Faculty
 
 #### Query:
@@ -199,8 +222,10 @@ mutation DeleteFaculty($id: ID!) {
 }
 ```
 
+<a id="department_queries" />
 ## Departments
 
+<a id="get_list_of_departments" />
 ### Get a list of Departments
 
 #### Query:
@@ -235,6 +260,7 @@ query DepartmentConnection {
 }
 ```
 
+<a id="get_list_of_departments_with_limit_and_offset" />
 ### Get a list of Departments (with limit and offset)
 
 #### Query:
@@ -277,6 +303,7 @@ query DepartmentConnection($limit: Int!, $offset: Int!) {
 }
 ```
 
+<a id="get_department_by_id" />
 ### Get Department by ID
 
 #### Query:
@@ -311,6 +338,7 @@ query Department($id: ID!) {
 }
 ```
 
+<a id="create_department" />
 ### Create Department
 
 #### Query:
@@ -355,6 +383,7 @@ mutation CreateDepartment($department: DepartmentInputPayload!) {
 }
 ```
 
+<a id="update_department" />
 ### Update Department
 
 #### Query:
@@ -383,6 +412,7 @@ mutation UpdateDepartment($id: ID!, $department: DepartmentInputPayload!) {
 }
 ```
 
+<a id="delete_department" />
 ### Delete Department
 
 #### Query:
