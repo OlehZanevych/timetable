@@ -5,15 +5,15 @@
     - [Get a list of Faculties (with limit and offset)](#get_list_of_faculties_with_limit_and_offset)
     - [Get Faculty by ID](#get_faculty_by_id)
     - [Create Faculty](#create_faculty)
-    - [Update Faculty](update_faculty)
-    - [Delete Faculty](delete_faculty)
+    - [Update Faculty](#update_faculty)
+    - [Delete Faculty](#delete_faculty)
 - [Department queries](#department_queries)
     - [Get a list of Departments](#get_list_of_departments)
     - [Get a list of Departments (with limit and offset)](#get_list_of_departments_with_limit_and_offset)
     - [Get Department by ID](#get_department_by_id)
     - [Create Department](#create_department)
-    - [Update Department](update_department)
-    - [Delete Department](delete_department)
+    - [Update Department](#update_department)
+    - [Delete Department](#delete_department)
 
 
 <a id="faculty_queries" />
