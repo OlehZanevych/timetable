@@ -7,8 +7,6 @@ import {Faculty} from 'src/app/model/faculty/Faculty';
 import {FacultyContent} from 'src/app/model/faculty/FacultyContent';
 
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -17,12 +15,35 @@ export class FacultyService {
   }
 
   getFaculties(): Observable<FacultyItem[]> {
-    return this.apollo
-    .watchQuery({
+    return this.apollo.watchQuery({
       query: gql`
         query FacultyConnection {
           faculties {
             facultyConnection {
+              nodes {
+                id
+                name
+                website
+                email
+                phone
+                address
+                logoUri
+              }
+            }
+          }
+        }
+      `
+    })
+    .valueChanges.pipe(map((response: any) =>
+      response.data?.faculties?.facultyConnection?.nodes || []));
+  }
+
+  getFaculty(facultyId: number): Observable<Faculty> {
+    return this.apollo.watchQuery({
+      query: gql`
+        query Faculty($id: ID!) {
+          faculties {
+            faculty(id: $id) {
               id
               name
               website
@@ -36,20 +57,18 @@ export class FacultyService {
                 name
                 email
                 phone
-                address
                 info
               }
             }
           }
         }
-      `
+      `,
+      variables: {
+        id: facultyId
+      }
     })
     .valueChanges.pipe(map((response: any) =>
-      response.data?.faculties?.facultyConnection || []));
-  }
-
-  getFaculty(facultyId: number): Observable<Faculty> {
-    return this.api.getFaculty(facultyId);
+      response.data?.faculties?.faculty || []));
   }
 
   updateFaculty(facultyId: number, facultyContent: FacultyContent): Observable<void> {

@@ -1,0 +1,42 @@
+type AuthMutations {
+    signIn(credentials: UserCredentials!): SignInResponse
+    refreshAuthToken: RefreshAuthTokenResponse
+}
+
+input UserCredentials {
+    username: String!
+    password: String!
+}
+
+type SignInResponse {
+    """
+    Flag that indicates whether the User has successfully logged in
+    """
+    isSuccess: Boolean!
+    """
+    Indicates the type of error that caused User login to fail
+    """
+    errorStatus: LoginResponseErrorStatus
+}
+
+type RefreshAuthTokenResponse {
+    """
+    Flag that indicates whether the Auth Token was successfully refreshed
+    """
+    isSuccess: Boolean!
+    """
+    Indicates the type of error that caused  refreshing of Auth Token to fail
+    """
+    errorStatus: RefreshAuthTokenResponseErrorStatus
+}
+
+enum LoginResponseErrorStatus {
+    INVALID_CREDENTIALS
+    INTERNAL_SERVER_ERROR
+}
+
+enum RefreshAuthTokenResponseErrorStatus {
+    MISSED_AUTH_TOKEN
+    INVALID_AUTH_TOKEN
+    INTERNAL_SERVER_ERROR
+}

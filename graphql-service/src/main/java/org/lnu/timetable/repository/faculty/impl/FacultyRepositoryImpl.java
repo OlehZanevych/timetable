@@ -49,7 +49,7 @@ public class FacultyRepositoryImpl implements FacultyRepository {
     @Override
     public Mono<Faculty> findById(Long id, FacultyFieldSelection fieldSelection) {
         return r2dbcEntityTemplate.select(Faculty.class)
-            .matching(query(where(ID).is(id)).columns(fieldSelection.getRootFields())).one();
+                .matching(query(where(ID).is(id)).columns(fieldSelection.getRootFields())).one();
     }
 
     @Override

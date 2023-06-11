@@ -9,8 +9,6 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-import static org.lnu.timetable.constants.ApiConstants.AUTH_HEADER;
-
 @Component
 @AllArgsConstructor
 public class CorsFilter implements WebFilter {
@@ -27,7 +25,7 @@ public class CorsFilter implements WebFilter {
     private void addCorsHeaders(HttpHeaders responseHeaders) {
         responseHeaders.add("Access-Control-Allow-Origin", "*");
         responseHeaders.add("Access-Control-Allow-Headers", "Origin,Content-Type,Accept," +
-            "X-Requested-With," + AUTH_HEADER);
+            "X-Requested-With," + HttpHeaders.AUTHORIZATION);
         responseHeaders.add("Access-Control-Allow-Credentials", "true");
         responseHeaders.add("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD");
         responseHeaders.add("Access-Control-Max-Age", "1209600");
