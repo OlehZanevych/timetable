@@ -9,7 +9,7 @@ type FacultyMutations {
     deleteFaculty(id: ID!): FacultyDeleteResponse
 }
 
-type FacultyConnection implements Connection{
+type FacultyConnection implements Connection {
     nodes: [Faculty!]!
     pageInfo: ConnectionPageInfo!
 }
