@@ -12,6 +12,6 @@ class FacultiesAndDepartmentsBasicTestsSimulation extends Simulation {
   val users = scenario("Faculties and departments basic testing").exec(TestCases.testCases)
 
   setUp(
-    users.inject(rampUsers(10))
+    users.inject(atOnceUsers(100))
   ).protocols(httpProtocol)
 }
