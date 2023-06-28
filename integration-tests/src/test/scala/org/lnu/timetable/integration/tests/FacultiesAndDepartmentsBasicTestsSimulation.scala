@@ -13,6 +13,6 @@ class FacultiesAndDepartmentsBasicTestsSimulation extends Simulation {
   val users = scenario("Faculties and departments basic testing").exec(TestCases.testCases)
 
   setUp(
-    users.inject(constantUsersPerSec(4) during (60 seconds))
+    users.inject(constantUsersPerSec(4) during (120 seconds))
   ).protocols(httpProtocol)
 }

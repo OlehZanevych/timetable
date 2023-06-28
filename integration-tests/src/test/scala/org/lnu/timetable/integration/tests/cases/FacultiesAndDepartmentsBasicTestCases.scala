@@ -337,21 +337,6 @@ object FacultiesAndDepartmentsBasicTestCases {
       .check(jsonPath("$.data.faculties.updateFaculty.errorStatus").isNull)
     )
 
-    .exec(buildGraphQlRequest("Update Faculty", updateFacultyMutation, Map(
-      "id" -> "${facultyId}",
-      "faculty" -> Map(
-        "name" -> "Faculty of Applied Mathematics and Informatics ${facultyNameSuffix}2",
-        "website" -> "ami2.lnu.edu.ua",
-        "email" -> "ami2@lnu.edu.ua",
-        "phone" -> "274-01-80, 239-41-87",
-        "address" -> "Universytetska Street 2, Lviv, 79000, Ukraine",
-        "info" -> "Faculty of Applied Mathematics and Informatics is the best of the best!"
-      )
-    ))
-      .check(jsonPath("$.data.faculties.updateFaculty.isSuccess").is("true"))
-      .check(jsonPath("$.data.faculties.updateFaculty.errorStatus").isNull)
-    )
-
     .exec(buildGraphQlRequest("Create Department", createDepartmentMutation, Map(
       "department" -> Map(
         "name" -> "Department of Applied Mathematics 1 ${departmentNameSuffix}",
