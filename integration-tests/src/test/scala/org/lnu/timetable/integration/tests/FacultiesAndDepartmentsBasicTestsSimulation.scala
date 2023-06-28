@@ -1,8 +1,9 @@
 package org.lnu.timetable.integration.tests
 
 import org.lnu.timetable.integration.tests.cases.TestCases
-import io.gatling.core.Predef.*
-import io.gatling.http.Predef.*
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import scala.concurrent.duration._
 
 import java.util.concurrent.ThreadLocalRandom
 
@@ -12,6 +13,6 @@ class FacultiesAndDepartmentsBasicTestsSimulation extends Simulation {
   val users = scenario("Faculties and departments basic testing").exec(TestCases.testCases)
 
   setUp(
-    users.inject(atOnceUsers(100))
+    users.inject(constantUsersPerSec(4) during (60 seconds))
   ).protocols(httpProtocol)
 }
