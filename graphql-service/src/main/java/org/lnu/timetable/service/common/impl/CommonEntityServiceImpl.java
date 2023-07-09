@@ -9,15 +9,12 @@ import org.lnu.timetable.service.common.CommonEntityService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
 import java.util.List;
 
 import static org.lnu.timetable.constants.GraphQlSchemaConstants.HAS_NEXT_PAGE;
 import static org.lnu.timetable.constants.GraphQlSchemaConstants.NEXT_PAGE_CURSOR;
 import static org.lnu.timetable.constants.GraphQlSchemaConstants.NODES;
 import static org.lnu.timetable.constants.GraphQlSchemaConstants.PAGE_INFO;
-import static org.lnu.timetable.util.FieldSelectionUtil.ID_FIELD_ONLY;
-import static org.lnu.timetable.util.FieldSelectionUtil.getSelectedDbFields;
 
 public abstract class CommonEntityServiceImpl<Entity> implements CommonEntityService<Entity> {
     @Override

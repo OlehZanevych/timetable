@@ -23,14 +23,12 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import static org.lnu.timetable.constants.ApiConstants.FACULTIES_ROOT_URI;
 import static org.lnu.timetable.constants.ApiConstants.FACULTY_LOGO_SUB_URI;
 import static org.lnu.timetable.constants.GraphQlContextConstants.DEPARTMENT_SELECTED_DB_FIELDS;
-import static org.lnu.timetable.constants.GraphQlSchemaConstants.FACULTY;
 import static org.lnu.timetable.entity.common.response.CreateMutationResponse.errorCreateMutationResponse;
 import static org.lnu.timetable.entity.common.response.MutationResponse.errorMutationResponse;
 import static org.lnu.timetable.entity.common.response.MutationResponse.successfulMutationResponse;
