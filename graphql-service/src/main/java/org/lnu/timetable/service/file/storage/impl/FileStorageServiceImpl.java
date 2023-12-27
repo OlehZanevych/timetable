@@ -51,7 +51,8 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public Mono<Boolean> checkIfFileExists(String fileName) {
-        return Mono.fromCallable(() -> checkIfExists(fileName));
+        return Mono.fromCallable(() -> checkIfExists(fileName))
+                .publishOn(defaultScheduler);
     }
 
     public Mono<Void> checkIfFilesExists(List<FileProcessor> fileProcessors) {
