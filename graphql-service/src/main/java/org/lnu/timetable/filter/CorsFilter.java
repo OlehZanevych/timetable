@@ -26,8 +26,7 @@ public class CorsFilter implements WebFilter {
 
     private void addCorsHeaders(HttpHeaders responseHeaders) {
         responseHeaders.add("Access-Control-Allow-Origin", "*");
-        responseHeaders.add("Access-Control-Allow-Headers", "Origin,Content-Type,Accept," +
-            "X-Requested-With," + AUTH_HEADER);
+        responseHeaders.add("Access-Control-Allow-Headers", "*");
         responseHeaders.add("Access-Control-Allow-Credentials", "true");
         responseHeaders.add("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD");
         responseHeaders.add("Access-Control-Max-Age", "1209600");
